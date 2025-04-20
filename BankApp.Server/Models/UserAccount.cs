@@ -1,6 +1,5 @@
-﻿namespace BankApp.Server.Models
-{
-    public class UserAccount
+﻿
+     class UserAccount : BaseAccount
     {
     }
-}
+

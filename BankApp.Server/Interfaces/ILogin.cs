@@ -4,7 +4,7 @@ namespace BankApp.Server.Interfaces
 {
     public interface ILogin
     {
-        void Login(LoginModelRequest modelRequest);
+        string Login(LoginModelRequest modelRequest);
 
         string GenerateTempPassword(string username);
 

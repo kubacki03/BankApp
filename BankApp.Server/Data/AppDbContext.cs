@@ -1,6 +1,9 @@
-﻿namespace BankApp.Server.Data
-{
-    public class AppDbContext
+﻿using Microsoft.EntityFrameworkCore;
+
+
+    public class AppDbContext :DbContext
     {
+
+       public DbSet<BaseAccount> accounts;
     }
-}
+
