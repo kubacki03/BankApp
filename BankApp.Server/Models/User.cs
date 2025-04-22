@@ -1,7 +1,10 @@
-﻿namespace BankApp.Server.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BankApp.Server.Models
 {
     public class User
     {
+         
         private string Name { get; set; }
         private string SecondName { get; set; }
 

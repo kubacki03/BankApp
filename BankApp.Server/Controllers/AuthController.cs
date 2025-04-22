@@ -1,5 +1,6 @@
 ﻿using BankApp.Server.DTO;
 using BankApp.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Server.Controllers
@@ -14,6 +15,7 @@ namespace BankApp.Server.Controllers
             this.authService = authService;
         }
 
+        [Authorize]
         [HttpGet("/login")]
         public IActionResult Login(LoginModelRequest request)
         {

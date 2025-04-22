@@ -2,8 +2,8 @@
      public class BaseAccount
     {
         protected int Id { get; set; }
-        protected string AccountNumber { get; set; }
-        protected decimal Balance { get; set; }
+        public string AccountNumber { get; set; }
+        public decimal Balance { get; set; }
         public DateTime CreatedAt { get; set; }             
         public bool IsActive { get; set; }                  
                       

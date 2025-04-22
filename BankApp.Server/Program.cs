@@ -34,11 +34,12 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddControllers();
 //dodaje serwisy
 builder.Services.AddScoped<AuthService, AuthService>();
-
+builder.Services.AddScoped<AccountDetailsService, AccountDetailsService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -59,7 +60,7 @@ app.MapStaticAssets();
 
 
 //app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -62,7 +62,7 @@ namespace TestyBanku
             // Assert
             ClassicAssert.NotNull(token);
             ClassicAssert.IsNotEmpty(token);
-            TestContext.WriteLine($"Generated Token: {token}");
+            TestContext.Out.WriteLine($"Generated Token: {token}");
         }
 
 
