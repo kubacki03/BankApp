@@ -2,13 +2,38 @@
 {
     public class TransferModelRequest
     {
-        private long Id { get; set; }
-        private decimal Amount { get; set; }
 
-        private string SenderAccountNumber { get; set; }
+       
+            public decimal Amount { get; set; }
+            public string SenderAccountNumber { get; set; }
+            public string RecipientAccountNumber { get; set; }
+            public DateTime Date { get; set; }
+            public string Title { get; set; }
+        
 
-        protected string RecipientAccountNumber { get; set; }
+        public decimal GetAmount()
+        {
+            return Amount;
+        }
 
-        private DateTime Date { get; set; }
+        public string GetSenderAccountNumber()
+        {
+            return SenderAccountNumber;
+        }
+
+        public string GetRecipientAccountNumber()
+        {
+            return RecipientAccountNumber;
+        }
+
+        public DateTime GetDate()
+        {
+            return Date;
+        }
+
+        public string GetTitle()
+        {
+            return Title;
+        }
     }
 }

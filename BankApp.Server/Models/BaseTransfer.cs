@@ -4,13 +4,25 @@
     {
         private int Id { get; set; }
 
-        private readonly decimal Amount;
+        public decimal Amount { get; private set; }
+        public DateTime Date { get; private set; }
+        public BaseAccount Payee { get; private set; }
+        public BaseAccount Sender { get; private set; }
+        public string Title { get; private set; }
 
-        private DateTime Date { get; set; } = DateTime.Now;
+        public BaseTransfer( decimal amount, DateTime date, BaseAccount payee, BaseAccount sender, string title)
+        {
+           
+            Amount = amount;
+            Date = date;
+            Payee = payee;
+            Sender = sender;
+            Title = title;
+        }
 
-        private   BaseAccount Payee { get; set; }
-        private BaseAccount Sender { get; set; }
-
-        private string Title { get; set; }
+        public int GetId()
+        {
+            return Id;
+        }
     }
 }

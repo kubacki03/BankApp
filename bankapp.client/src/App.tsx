@@ -1,58 +1,47 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { ReactNode } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import HomeComponent from './HomeComponent';
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
+interface JwtPayload {
+    exp: number;
+}
+interface PrivateRouteProps {
+    element: ReactNode;
 }
 
-function App() {
-    const [forecasts, setForecasts] = useState<Forecast[]>();
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
+    const token = localStorage.getItem('token');
 
-    useEffect(() => {
-        populateWeatherData();
-    }, []);
+    if (!token) return <Navigate to="/" />;
 
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
+    try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        const currentTime = Date.now() / 1000;
 
-    return (
-        <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
-        </div>
-    );
-
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        if (response.ok) {
-            const data = await response.json();
-            setForecasts(data);
+        if (decoded.exp < currentTime) {
+            localStorage.removeItem('token');
+            return <Navigate to="/" />;
         }
+
+        return <>{element}</>;
+
+    } catch (error) {
+
+        localStorage.removeItem('token');
+        return <Navigate to="/" />;
     }
-}
+};
+
+const App = () => {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<HomeComponent />} />
+            </Routes>
+        </Router>
+    );
+};
 
 export default App;

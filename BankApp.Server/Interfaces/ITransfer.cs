@@ -7,6 +7,6 @@ namespace BankApp.Server.Interfaces
 
         public void SendTransfer(TransferModelRequest request);
 
-        public TransferModelRequest GetTransferDetails(string transferID);
+        public ICollection<TransferModelRequest> GetAccountTransfers(string accountNumber);
     }
 }

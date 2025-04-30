@@ -39,6 +39,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
 //dodaje serwisy
 builder.Services.AddScoped<AuthService, AuthService>();
+builder.Services.AddScoped<TransferServices, TransferServices>();
 builder.Services.AddScoped<AccountDetailsService, AccountDetailsService>();
 builder.Services.AddCors(options =>
 {

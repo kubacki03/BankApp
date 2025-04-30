@@ -1,5 +1,7 @@
 ﻿
-     public class BaseAccount
+using BankApp.Server.Models;
+
+public class BaseAccount
     {
         protected int Id { get; set; }
         public string AccountNumber { get; set; }
@@ -9,6 +11,8 @@
                       
         public string Password { get; set; }
         public string Login { get; set; }
+
+        public ICollection<BaseTransfer> Transfers { get; set; } = new List<BaseTransfer>();
 
      }
 
