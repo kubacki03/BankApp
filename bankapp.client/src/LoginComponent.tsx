@@ -30,21 +30,31 @@ function LoginComponent() {
     };
 
     return (
-        <div>
+        <div className="border-amber-500 mx-50 mt-10 p-4 gap-50 flex rounded-lg border">
+
             <form onSubmit={handleSubmit} >
-                <div>
-                    <label htmlFor="login">Login</label>
-                    <input name="login" type="text" value={email} onChange={(e) => setEmail(e.target.value)} ></input>
+                <div >
+                    <label htmlFor="login" className="pr-4">Login</label>
+                    <input name="login" type="text" className="border-amber-500 px-1 rounded-lg border" placeholder=" Wpisz swoj login" value={email} onChange={(e) => setEmail(e.target.value)} ></input>
+                </div>
+                <div className="my-2">
+                    <label htmlFor="password" className="pr-4">Hasło</label>
+                    <input name="password" type="password" className=" border-amber-500 px-1 rounded-lg border" placeholder=" Wpisz swoje hasło" value={password} onChange={(e) => setPassword(e.target.value)} ></input>
                 </div>
                 <div>
-                    <label htmlFor="password">Hasło</label>
-                    <input name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                    <button type="submit" className="border-amber-700 bg-amber-500 p-1 cursor-pointer rounded-lg border">Zaloguj się</button>
                 </div>
-                <div>
-                    <button type="submit">Zaloguj się</button>
-                </div>
+                {serverError && (
+                    <div className="text-red-600 my-2 font-semibold">
+                        {serverError}
+                    </div>
+                )}
             </form>
 
+            <div className="border-gray-300 pl-10 ml-50 border-l">
+            <h1 className="my-4">Jeśli nie masz jeszcze konta?</h1>
+                <a className="bg-red-400 p-2 cursor-pointer rounded-lg">Załóż konto</a>
+            </div>
         </div>
     );
 }

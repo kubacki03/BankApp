@@ -1,5 +1,7 @@
-﻿import { useState } from "react";
+﻿/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState } from "react";
 import LoginComponent from "./LoginComponent";
+import NewsComponent from "./NewsComponent";
 
 function HomeComponent() {
     const [isVisible, setIsVisible] = useState(true);
@@ -21,6 +23,10 @@ function HomeComponent() {
             )}
 
             <LoginComponent />
+            <hr className="my-10"></hr>
+            <NewsComponent/>
+            
+           
         </div>
     );
 }

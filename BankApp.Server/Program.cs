@@ -1,4 +1,5 @@
 
+using BankApp.Server.Interfaces;
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -37,10 +38,21 @@ builder.Services.AddAuthorization();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddControllers();
+/*
 //dodaje serwisy
 builder.Services.AddScoped<AuthService, AuthService>();
 builder.Services.AddScoped<TransferServices, TransferServices>();
 builder.Services.AddScoped<AccountDetailsService, AccountDetailsService>();
+// Register your IRepository interface with its implementation
+builder.Services.AddScoped<IRepository, RepositoryService>();
+builder.Services.AddScoped<RepositoryService>(); // needed if any service uses RepositoryService directly
+
+builder.Services.AddScoped<ITransfer, TransferServices>();
+builder.Services.AddScoped<TransferServices>(); // needed if any service uses TransferServices directly
+
+builder.Services.AddScoped<AccountDetailsService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+*/
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -54,13 +66,13 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
-
+app.UseCors("AllowAll");
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
 
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
