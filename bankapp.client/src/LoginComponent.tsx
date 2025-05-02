@@ -30,19 +30,21 @@ function LoginComponent() {
     };
 
     return (
-        <div className="border-amber-500 mx-50 mt-10 p-4 gap-50 flex rounded-lg border">
+        <div className="border-amber-500 mt-10 p-4 gap-10 mx-4 flex flex-col rounded-lg border md:flex-row md:mx-20">
 
-            <form onSubmit={handleSubmit} >
+
+            <form onSubmit={handleSubmit} className="px-4 w-full md:w-1/2">
+
                 <div >
                     <label htmlFor="login" className="pr-4">Login</label>
-                    <input name="login" type="text" className="border-amber-500 px-1 rounded-lg border" placeholder=" Wpisz swoj login" value={email} onChange={(e) => setEmail(e.target.value)} ></input>
+                    <input name="login" type="text" className="border-amber-500 px-1 rounded-lg border focus:border-yellow-300 focus:outline-none" placeholder=" Wpisz swoj login" value={email} onChange={(e) => setEmail(e.target.value)} ></input>
                 </div>
                 <div className="my-2">
                     <label htmlFor="password" className="pr-4">Hasło</label>
-                    <input name="password" type="password" className=" border-amber-500 px-1 rounded-lg border" placeholder=" Wpisz swoje hasło" value={password} onChange={(e) => setPassword(e.target.value)} ></input>
+                    <input name="password" type="password" className=" border-amber-500 px-1 focus rounded-lg border focus:border-yellow-300 focus:outline-none" placeholder=" Wpisz swoje hasło" value={password} onChange={(e) => setPassword(e.target.value)} ></input>
                 </div>
                 <div>
-                    <button type="submit" className="border-amber-700 bg-amber-500 p-1 cursor-pointer rounded-lg border">Zaloguj się</button>
+                    <button type="submit" className="border-amber-700 bg-amber-500 p-1 cursor-pointer rounded-lg border transition duration-300 ease-in-out hover:bg-amber-300">Zaloguj się</button>
                 </div>
                 {serverError && (
                     <div className="text-red-600 my-2 font-semibold">
@@ -51,9 +53,10 @@ function LoginComponent() {
                 )}
             </form>
 
-            <div className="border-gray-300 pl-10 ml-50 border-l">
+            <div className="pl-6 mt-6 border-gray-300 w-full border-l md:w-1/2 md:mt-0">
+
             <h1 className="my-4">Jeśli nie masz jeszcze konta?</h1>
-                <a className="bg-red-400 p-2 cursor-pointer rounded-lg">Załóż konto</a>
+                <a className="bg-purple-400 p-2 rounded-lg transition duration-300 ease-in-out hover:bg-red-300" href="/register">Załóż konto</a>
             </div>
         </div>
     );

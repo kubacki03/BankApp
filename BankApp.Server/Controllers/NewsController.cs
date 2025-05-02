@@ -16,9 +16,14 @@ namespace BankApp.Server.Controllers
 
             var news2 = new NewsDTO { Title = "Nowosci", Content = "Nasz bank jest najlepszy", Date = DateOnly.FromDateTime(DateTime.Now) };
 
-            var newsList = new List<NewsDTO>();
-            newsList.Add(news);
-            newsList.Add(news2);
+            //var news3 = new NewsDTO { Title = "Nowosci", Content = "Nasz bank jest najlepszy", Date = DateOnly.FromDateTime(DateTime.Now) };
+
+            //var news4 = new NewsDTO { Title = "Nowosci", Content = "Nasz bank jest najlepszy", Date = DateOnly.FromDateTime(DateTime.Now) };
+
+            //var news5 = new NewsDTO { Title = "Nowosci", Content = "Nasz bank jest najlepszy", Date = DateOnly.FromDateTime(DateTime.Now) };
+
+            var newsList = new List<NewsDTO> { news,news1,news2};
+         
             Console.WriteLine(news);
             return Ok(newsList);
         }

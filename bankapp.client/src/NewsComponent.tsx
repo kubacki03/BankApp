@@ -38,27 +38,21 @@ function NewsComponent() {
     console.log('Wszystko git')
     return (
         <div>
-        <h1 className="mb-8 text-center text-2xl">Najnowsze wiadomości</h1>
-        <div className="flex-column gap-33 mx-10 flex">
-           
-            <div className="border-amber-500 px-10 pb-10 rounded-lg border shadow-xl hover:bg-amber-100">
-                <article>
-                    <h1 className="text-xl font-bold">{news[0].title}</h1>
-                    <p className="text-xl">{news[0].content}</p>
-                    <p>{news[0].date}</p>
-                    <a href="#">Zobacz więcej</a>
-            </article>
-            </div>
-
-                <div className="border-amber-500 px-10 pb-10 rounded-lg border shadow-xl hover:bg-amber-100">
-                <article>
-                    <h1 className="text-xl font-bold">{news[1].title}</h1>
-                    <p className="text-xl">{news[1].content}</p>
-                    <p>{news[1].date}</p>
-                    <a href="#">Zobacz więcej</a>
-                </article>
-            </div>
-         
+            <h1 className="mb-8 text-center text-2xl">Najnowsze wiadomości</h1>
+            <div className="gap-6 mx-10 flex flex-col justify-center md:flex-row">
+                {news.map((item, index) => (
+                    <div
+                        key={index}
+                        className="border-amber-500 px-10 pb-10 m-4 w-full rounded-lg border shadow-xl hover:bg-amber-100 md:w-1/2 lg:w-1/4"
+                    >
+                        <article>
+                            <h1 className="text-xl font-bold">{item.title}</h1>
+                            <p className="text-xl">{item.content}</p>
+                            <p>{item.date}</p>
+                          
+                        </article>
+                    </div>
+                ))}
             </div>
         </div>
     );

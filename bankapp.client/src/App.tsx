@@ -3,6 +3,7 @@ import React, { ReactNode } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import HomeComponent from './HomeComponent';
+import RegisterComponent from './RegisterComponent';
 
 interface JwtPayload {
     exp: number;
@@ -39,6 +40,7 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<HomeComponent />} />
+                <Route path="/register" element={<RegisterComponent />} />
             </Routes>
         </Router>
     );
