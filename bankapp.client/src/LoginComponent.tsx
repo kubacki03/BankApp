@@ -30,7 +30,7 @@ function LoginComponent() {
     };
 
     return (
-        <div className="border-amber-500 mt-10 p-4 gap-10 mx-4 flex flex-col rounded-lg border md:flex-row md:mx-20">
+        <div className="mx-30 border-red-900 flex flex-col items-center">
 
 
             <form onSubmit={handleSubmit} className="px-4 w-full md:w-1/2">
@@ -53,11 +53,7 @@ function LoginComponent() {
                 )}
             </form>
 
-            <div className="pl-6 mt-6 border-gray-300 w-full border-l md:w-1/2 md:mt-0">
-
-            <h1 className="my-4">Jeśli nie masz jeszcze konta?</h1>
-                <a className="bg-purple-400 p-2 rounded-lg transition duration-300 ease-in-out hover:bg-red-300" href="/register">Załóż konto</a>
-            </div>
+            
         </div>
     );
 }
