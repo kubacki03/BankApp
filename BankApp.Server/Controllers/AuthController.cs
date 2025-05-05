@@ -1,4 +1,5 @@
 ﻿using BankApp.Server.DTO;
+using BankApp.Server.Models;
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace BankApp.Server.Controllers
             this.authService = authService;
         }
 
-        [Authorize]
+ 
         [HttpGet("/login")]
         public IActionResult Login(LoginModelRequest request)
         {
@@ -33,5 +34,18 @@ namespace BankApp.Server.Controllers
             return Ok(token);
         }
 
+
+       
+        [HttpPost("/register")]
+        public IActionResult Register(RegisterModelRequest request)
+        {
+            var isDone = authService.Register(request);
+
+            if (isDone == false) {
+                return Conflict();
+            }
+            
+            return Ok();
+        }
     }
 }

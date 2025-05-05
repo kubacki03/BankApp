@@ -2,27 +2,32 @@
 {
     public class BaseTransfer
     {
-        private int Id { get; set; }
+        public int Id { get; set; }
 
-        public decimal Amount { get; private set; }
-        public DateTime Date { get; private set; }
-        public BaseAccount Payee { get; private set; }
-        public BaseAccount Sender { get; private set; }
-        public string Title { get; private set; }
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
 
-        public BaseTransfer( decimal amount, DateTime date, BaseAccount payee, BaseAccount sender, string title)
+        public int PayeeId { get; set; } // Klucz obcy do BaseAccount (Payee)
+        public BaseAccount Payee { get; set; } // Nawigacja do BaseAccount (Payee)
+
+        public int SenderId { get; set; } // Klucz obcy do BaseAccount (Sender)
+        public BaseAccount Sender { get; set; } // Nawigacja do BaseAccount (Sender)
+
+        public string Title { get; set; }
+
+        // Konstruktor bezparametrowy – potrzebny dla EF Core
+        public BaseTransfer() { }
+
+        public BaseTransfer(decimal amount, DateTime date, BaseAccount payee, BaseAccount sender, string title)
         {
-           
             Amount = amount;
             Date = date;
             Payee = payee;
             Sender = sender;
             Title = title;
         }
-
-        public int GetId()
-        {
-            return Id;
-        }
     }
+
+
 }
+

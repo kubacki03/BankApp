@@ -1,6 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Numerics;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using BankApp.Server.DTO;
 using BankApp.Server.Interfaces;
 using BankApp.Server.Models;
@@ -14,10 +16,12 @@ namespace BankApp.Server.Services
 
         private readonly IRepository repositoryService;
         private readonly IConfiguration _config;
-        public AuthService(IRepository repository, IConfiguration config)
+        private readonly Mapper mapper;
+        public AuthService(IRepository repository, IConfiguration config, Mapper mapper)
         {
             this.repositoryService = repository;
             this._config = config;
+            this.mapper = mapper;
         }
         public bool DoesUserExist(RegisterModelRequest modelRequest)
         {
@@ -71,7 +75,54 @@ namespace BankApp.Server.Services
 
         public bool Register(RegisterModelRequest modelRequest)
         {
-            throw new NotImplementedException();
+            if (repositoryService.DoesUserExists(modelRequest.pesel))
+            {
+                return false;
+            }
+
+            if (modelRequest.nip!=null && repositoryService.DoesCompanyExistx(modelRequest.nip))
+            {
+                return false;
+            }
+
+            var newUser= mapper.Map<User>(modelRequest);
+
+            BaseAccount account = null;
+            var passwordHasher = new PasswordHasher<BaseAccount>();
+            var hashedPassword = passwordHasher.HashPassword(account, modelRequest.password);
+
+            var curentTime = DateTime.Now.Millisecond;
+            var hashCode = modelRequest.GetHashCode();
+            BigInteger number = BigInteger.Abs(curentTime * hashCode);
+
+            
+            string numberStr = number.ToString();
+
+            
+            if (numberStr.Length < 26)
+                numberStr = numberStr.PadLeft(26, '0');
+
+            
+            if (numberStr.Length > 26)
+                numberStr = numberStr.Substring(0, 26);
+
+
+            if (modelRequest.companyName != null)
+            {
+                account = new CompanyAccount { Balance = 0, Email = modelRequest.email, IsActive = true, Password = hashedPassword, Iban=numberStr};
+                var login = account.GetHashCode();
+                account.Login = BigInteger.Abs(login).ToString();
+            }
+            else
+            {
+                account = new BaseAccount { Balance = 0, Email= modelRequest.email,IsActive = true, Password = hashedPassword, Iban=numberStr };
+                var login = account.GetHashCode();
+                account.Login=BigInteger.Abs(login).ToString();
+            }
+
+
+
+            return true;
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿
-    class CompanyAccount : BaseAccount
+    public class CompanyAccount : BaseAccount
     {
-    private string CompanyName { get; set; }
-    private string NIP { get; set; }             
-    private string REGON { get; set; }           
+    public string CompanyName { get; set; }
+    public string NIP { get; set; }             
+    public string REGON { get; set; }           
     
-    private UserAccount UserAccount { get; set; }
-   
 }
 

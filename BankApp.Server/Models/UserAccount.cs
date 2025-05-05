@@ -1,5 +1,0 @@
-﻿
-     class UserAccount : BaseAccount
-    {
-    }
-

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using BankApp.Server.DTO;
 using BankApp.Server.Interfaces;
 using BankApp.Server.Models;
@@ -20,7 +21,7 @@ namespace TestyBanku
 
         private Mock<IConfiguration> _mockConfig;
         private AuthService _authService;
-
+        private Mapper _mapper;
         [SetUp]
         public void Setup()
         {
@@ -28,10 +29,10 @@ namespace TestyBanku
             _mockConfig = new Mock<IConfiguration>();
 
             // Konfiguracja "Jwt:Key" i "Jwt:Issuer"
-            _mockConfig.Setup(config => config["Jwt:Key"]).Returns("superSecretKey12345678dsaaaaaaaaadsaczxxzbcxv90"); // min. 256b
+            _mockConfig.Setup(config => config["Jwt:Key"]).Returns("superSecretKey12345678dsaaaaaaaaadsaczxxzbcxv90"); 
             _mockConfig.Setup(config => config["Jwt:Issuer"]).Returns("TestIssuer");
-
-            _authService = new AuthService(_mockRepo.Object, _mockConfig.Object);
+            
+            _authService = new AuthService(_mockRepo.Object, _mockConfig.Object, _mapper );
         }
 
         [Test]
