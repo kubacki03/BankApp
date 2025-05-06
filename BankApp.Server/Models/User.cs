@@ -14,7 +14,7 @@ namespace BankApp.Server.Models
         public string Pesel { get; set; }
 
         public ICollection<BaseAccount> BaseAccounts { get; set; } = new List<BaseAccount>();
-        public ICollection<CompanyAccount> CompanyAccounts { get; set; } = new List<CompanyAccount>();
+        
 
         public User() { }
         public User(string name, string secondName, DateOnly birthDate, string pesel)

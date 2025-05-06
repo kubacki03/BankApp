@@ -71,16 +71,19 @@ namespace BankApp.Server.Services
         public void CreateNewUser(User user)
         {
             _context.Users.Add(user);
+            _context.SaveChanges();
         }
 
         public void CreateNewPersonalAccount(BaseAccount account)
         {
             _context.Accounts.Add(account);
+            _context.SaveChanges();
         }
 
         public void CreateNewCompanyAccount(CompanyAccount companyAccount)
         {
            _context.CompanyAccounts.Add(companyAccount);
+            _context.SaveChanges();
         }
     }
 }

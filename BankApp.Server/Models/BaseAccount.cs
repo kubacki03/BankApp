@@ -3,9 +3,9 @@ using BankApp.Server.Models;
 
 public class BaseAccount
 {
-    public int Id { get; init; }
-    public string Iban { get; init; }
-    protected string Name { get; init; }
+    public int Id { get; set; }
+    public string Iban { get; set; }
+    protected string Name { get; set; }
 
     public decimal Balance { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;

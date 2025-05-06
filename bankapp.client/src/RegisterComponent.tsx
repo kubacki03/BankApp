@@ -1,9 +1,11 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { useState } from "react";
 import { useForm, SubmitHandler, FieldErrors } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 interface PrivateUserForm {
     email: string;
@@ -41,6 +43,7 @@ const companySchema = privateSchema.shape({
 });
 
 function RegisterComponent() {
+    const navigate = useNavigate(); 
     const [isPrivateUser, setIsPrivateUser] = useState(true);
     const [serverError, setServerError] = useState<string | undefined>(undefined);
 
@@ -59,7 +62,7 @@ function RegisterComponent() {
             if (response.status === 200) {
                 // Rejestracja zakończona sukcesem
                 console.log("Rejestracja udana:", response.data);
-                
+                navigate("/showLogin"); 
             } 
 
         } catch (error) {

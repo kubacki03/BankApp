@@ -90,6 +90,8 @@ namespace BankApp.Server.Services
             BaseAccount account = null;
             var passwordHasher = new PasswordHasher<BaseAccount>();
             var hashedPassword = passwordHasher.HashPassword(account, modelRequest.password);
+            repositoryService.CreateNewUser(newUser);
+            
 
             var curentTime = DateTime.Now.Millisecond;
             var hashCode = modelRequest.GetHashCode();
@@ -119,6 +121,17 @@ namespace BankApp.Server.Services
                 var login = account.GetHashCode();
                 account.Login=BigInteger.Abs(login).ToString();
             }
+
+            account.UserId = newUser.Id;
+            if (account is CompanyAccount)
+            {
+                repositoryService.CreateNewCompanyAccount((CompanyAccount)account);
+            }
+            else if (account is BaseAccount)
+            {
+                repositoryService.CreateNewPersonalAccount(account);
+            }
+
 
 
 
