@@ -62,7 +62,7 @@ namespace BankApp.Server.Services
                     issuer: _config["Jwt:Issuer"],
                     audience: _config["Jwt:Issuer"],
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(15),
+                    expires: DateTime.Now.AddMinutes(5),
                     signingCredentials: creds);
 
 

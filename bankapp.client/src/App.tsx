@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import HomeComponent from './HomeComponent';
 import RegisterComponent from './RegisterComponent';
 import SuccessRegisterComponent from './SuccessRegisterComponent';
+import DashboardComponent from './DashboardComponent';
 
 interface JwtPayload {
     exp: number;
@@ -43,6 +44,8 @@ const App = () => {
                 <Route path="/" element={<HomeComponent />} />
                 <Route path="/register" element={<RegisterComponent />} />
                 <Route path="/showLogin" element={<SuccessRegisterComponent />} />
+                <Route path="/dashboard" element={<PrivateRoute element={<DashboardComponent />} />} />
+
             </Routes>
         </Router>
     );

@@ -4,7 +4,7 @@
 
 function SavedPasswordPopUp({ onClose }: Props) {
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-white/10 backdrop-blur-sm">
+        <div className="fixed inset-0 flex items-center justify-center bg-white/10 backdrop-blur-xs">
 
             <div className="rounded-lg bg-white p-6 shadow-lg">
                 <h1 className="mb-4 text-xl font-bold">Czy na pewno zapisałeś/aś hasło?</h1>
