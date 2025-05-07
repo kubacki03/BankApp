@@ -1,9 +1,11 @@
 import AccountBalanceComponent from "./AccountBalanceComponent";
+import TransfersHistoryComponent from "./TransfersHistoryComponent";
 
 function DashboardComponent() {
   return (
       <>
-          <AccountBalanceComponent/>
+          <AccountBalanceComponent />
+          <TransfersHistoryComponent/>
       </>
   );
 }

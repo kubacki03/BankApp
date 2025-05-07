@@ -44,7 +44,7 @@ const App = () => {
                 <Route path="/" element={<HomeComponent />} />
                 <Route path="/register" element={<RegisterComponent />} />
                 <Route path="/showLogin" element={<SuccessRegisterComponent />} />
-                <Route path="/dashboard" element={<PrivateRoute element={<DashboardComponent />} />} />
+                <Route path="/dashboard" element={<DashboardComponent/> } />
 
             </Routes>
         </Router>

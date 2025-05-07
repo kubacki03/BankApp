@@ -34,5 +34,15 @@ namespace BankApp.Server.Services
 
             return mapper.Map<AccountDetailsDTO>(repositoryService.GetAccountByLogin(login));
         }
+
+
+        public bool DoesUserExistByPesel(string pesel) { 
+        return repositoryService.DoesUserExists(pesel);
+        }
+
+        public List<TransferDTO> GetLastTransferList(string iban)
+        {
+            return repositoryService.GetLastAccountTransfers(iban);
+        }
     }
 }

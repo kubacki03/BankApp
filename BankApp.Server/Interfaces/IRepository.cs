@@ -1,4 +1,5 @@
-﻿using BankApp.Server.Models;
+﻿using BankApp.Server.DTO;
+using BankApp.Server.Models;
 
 namespace BankApp.Server.Interfaces
 {
@@ -16,7 +17,7 @@ namespace BankApp.Server.Interfaces
 
         void SaveTransfer(BaseTransfer transfer);
 
-        ICollection<BaseTransfer> GetUserTransfers(string accountNumber);
+        List<TransferDTO> GetLastAccountTransfers(string accountNumber);
 
         void CreateNewUser(User user);
 

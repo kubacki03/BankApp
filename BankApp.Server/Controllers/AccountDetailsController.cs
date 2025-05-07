@@ -2,6 +2,7 @@
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Server.Controllers
 {
@@ -17,7 +18,7 @@ namespace BankApp.Server.Controllers
             _accountDetailsService = accountDetailsService;
         }
 
-        [HttpGet("account")]
+        [HttpGet("/account")]
         [Authorize]
         public IActionResult Get() {
 
@@ -25,6 +26,19 @@ namespace BankApp.Server.Controllers
 
             return Ok(detailsDTO);
         }
-       
+
+        [Authorize]
+        [HttpGet("/lastTransfers")]
+        public IActionResult GetLastTransfers([FromBody] string iban) {
+            var username = User.Identity?.Name;
+            var user = _accountDetailsService.DoesUserExistByPesel(username);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            var transfers = _accountDetailsService.GetLastTransferList(iban);
+
+            return Ok(transfers);
+        }
     }
 }

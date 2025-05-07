@@ -1,4 +1,5 @@
 ﻿
+using BankApp.Server.DTO;
 using BankApp.Server.Interfaces;
 using BankApp.Server.Models;
 using Microsoft.AspNetCore.Identity;
@@ -52,11 +53,6 @@ namespace BankApp.Server.Services
             _context.SaveChanges();
         }
 
-        public ICollection<BaseTransfer> GetUserTransfers(string accountNumber)
-        {
-           return _context.Accounts.FirstOrDefault(p=>p.Iban==accountNumber).Transfers;
-        }
-
         public bool DoesUserExists(string pesel)
         {
             return _context.Users.Any(p=>p.Pesel==pesel);
@@ -84,6 +80,11 @@ namespace BankApp.Server.Services
         {
            _context.CompanyAccounts.Add(companyAccount);
             _context.SaveChanges();
+        }
+
+        public List<TransferDTO> GetLastAccountTransfers(string accountNumber)
+        {
+            return _context.Accounts.FirstOrDefault(p=>p.Iban==accountNumber).Transfers.Select(x => new TransferDTO { Amount = x.Amount, Date = x.Date, PayeeName=x.Payee.User.Name , Title=x.Title }).Take(5).ToList();
         }
     }
 }
