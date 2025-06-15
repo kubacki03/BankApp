@@ -3,15 +3,21 @@ using System.Security.Claims;
 using BankApp.Server.DTO;
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Http;
+using BankApp.Server.Models;
 
 namespace BankApp.Server.Interfaces
 {
     public interface IAccount
     {
 
-          AccountDetailsDTO GetAccountDetails();
+          AccountDetailsDTO GetAccountDetails(string email);
         public bool DoesUserExistByPesel(string pesel);
 
-        List<TransferDTO> GetLastTransferList(string iban);
+        List<TransferDTO> GetLastTransferList(string login);
+
+        public User GetUserByPesel(string pesel);
+        BaseAccount GetAccountByLogin(string login);
+
+        BaseAccount GetAccountByAccountNumber(string number);
     }
 }

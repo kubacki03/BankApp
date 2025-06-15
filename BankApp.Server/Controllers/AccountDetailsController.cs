@@ -1,4 +1,5 @@
-﻿using BankApp.Server.Interfaces;
+﻿using System.Security.Claims;
+using BankApp.Server.Interfaces;
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,31 +13,33 @@ namespace BankApp.Server.Controllers
     {
 
         private readonly IAccount _accountDetailsService;
-
-        public AccountDetailsController(IAccount accountDetailsService)
+        public IConfiguration _config;
+        public AccountDetailsController(IAccount accountDetailsService, IConfiguration configuration)
         {
+            _config = configuration;
             _accountDetailsService = accountDetailsService;
         }
 
-        [HttpGet("/account")]
+        [HttpGet("account")]
         [Authorize]
         public IActionResult Get() {
-
-            var detailsDTO = _accountDetailsService.GetAccountDetails();
-
+            var email = User.Identity?.Name;
+            var detailsDTO = _accountDetailsService.GetAccountDetails(email);
+            
             return Ok(detailsDTO);
         }
 
         [Authorize]
-        [HttpGet("/lastTransfers")]
-        public IActionResult GetLastTransfers([FromBody] string iban) {
-            var username = User.Identity?.Name;
-            var user = _accountDetailsService.DoesUserExistByPesel(username);
+        [HttpGet("lastTransfers")]
+        public IActionResult GetLastTransfers() {
+            var email = User.Identity?.Name;
+
+            var user = _accountDetailsService.GetAccountByLogin(email);
             if (user == null)
             {
                 return Unauthorized();
             }
-            var transfers = _accountDetailsService.GetLastTransferList(iban);
+            var transfers = _accountDetailsService.GetLastTransferList(user.Email);
 
             return Ok(transfers);
         }

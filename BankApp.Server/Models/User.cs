@@ -13,6 +13,9 @@ namespace BankApp.Server.Models
 
         public string Pesel { get; set; }
 
+        public BaseAccount DefaulAccount { get; set; }
+        public int DefaultAccountId { get; set; }
+
         public ICollection<BaseAccount> BaseAccounts { get; set; } = new List<BaseAccount>();
         
 

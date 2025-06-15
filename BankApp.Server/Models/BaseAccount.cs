@@ -16,7 +16,7 @@ public class BaseAccount
 
     public string Email { get; set; }
 
-    public ICollection<BaseTransfer> Transfers { get; set; } = new List<BaseTransfer>(); // Lista transakcji
+    public ICollection<BaseTransfer> Transfers { get; set; } // Lista transakcji
 
     public int UserId { get; set; }
     public User User { get; set; }

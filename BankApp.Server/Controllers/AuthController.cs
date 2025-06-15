@@ -1,8 +1,13 @@
-﻿using BankApp.Server.DTO;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using BankApp.Server.DTO;
 using BankApp.Server.Models;
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BankApp.Server.Controllers
 {
@@ -10,29 +15,38 @@ namespace BankApp.Server.Controllers
     [Route("[controller]")]
     public class AuthController : Controller
     {
+        private readonly IConfiguration _config;
         private readonly AuthService authService;
-        public AuthController(AuthService authService)
+        public AuthController(AuthService authService, IConfiguration configuration)
         {
+            _config = configuration;
             this.authService = authService;
         }
 
- 
-        [HttpGet("/login")]
+
+        [Authorize]
+        [HttpGet("private")]
+        public IActionResult get()
+        {
+            return Ok("git");
+        }
+
+        [HttpPost("login")]
         public IActionResult Login(LoginModelRequest request)
         {
 
-            
+
             var token = authService.Login(request);
 
-
-            //if token is null theres no account with that login or password
             if (token == null)
             {
-                return NotFound();
+                return Unauthorized();
             }
+             
 
-            return Ok(token);
-        }
+
+                return Ok(token);
+            }
 
 
        

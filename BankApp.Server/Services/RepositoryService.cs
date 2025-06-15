@@ -16,9 +16,12 @@ namespace BankApp.Server.Services
             _context = context;
         }
 
-        
 
-        public BaseAccount GetAccountByLogin(string username) => _context.Accounts.FirstOrDefault(p => p.Login == username);
+
+        public BaseAccount GetAccountByEmail(string email)
+        {
+            return _context.Accounts.Include(a=>a.Transfers).FirstOrDefault(p => p.Email == email);
+        }
 
         public BaseAccount GetAccountByNumber(string number)
         {
@@ -50,6 +53,8 @@ namespace BankApp.Server.Services
         public void SaveTransfer(BaseTransfer transfer)
         {
             _context.Transfers.Add(transfer);
+            transfer.Payee.Transfers.Add(transfer);
+            transfer.Sender.Transfers.Add(transfer);
             _context.SaveChanges();
         }
 
@@ -74,17 +79,41 @@ namespace BankApp.Server.Services
         {
             _context.Accounts.Add(account);
             _context.SaveChanges();
+            account.User.DefaulAccount = account;
+            account.User.DefaultAccountId = account.Id;
+            _context.SaveChanges();
         }
 
         public void CreateNewCompanyAccount(CompanyAccount companyAccount)
         {
            _context.CompanyAccounts.Add(companyAccount);
+            
+            _context.SaveChanges();
+
+            companyAccount.User.DefaulAccount = companyAccount;
+            companyAccount.User.DefaultAccountId = companyAccount.Id;
             _context.SaveChanges();
         }
 
-        public List<TransferDTO> GetLastAccountTransfers(string accountNumber)
+        public List<TransferDTO> GetLastAccountTransfers(string email)
         {
-            return _context.Accounts.FirstOrDefault(p=>p.Iban==accountNumber).Transfers.Select(x => new TransferDTO { Amount = x.Amount, Date = x.Date, PayeeName=x.Payee.User.Name , Title=x.Title }).Take(5).ToList();
+
+            var account = _context.Accounts
+     .Include(a => a.Transfers)
+         .ThenInclude(t => t.Payee)
+             .ThenInclude(p => p.User)
+     .FirstOrDefault(p => p.Email == email);
+
+            return account?.Transfers
+                .Select(x => new TransferDTO { Amount = x.Amount, Date = x.Date.ToShortDateString(), PayeeName = x.Payee.User.Name, Title = x.Title })
+                .Take(5)
+                .ToList() ?? new List<TransferDTO>();
+
+        }
+
+        public User GetUserByPesel(string pesel)
+        {
+            return _context.Users.FirstOrDefault(p => p.Pesel == pesel);
         }
     }
 }

@@ -9,27 +9,15 @@ namespace BankApp.Server.Services
     {
         private readonly IRepository _repository;
         private readonly Mapper _mapper;
-        public TransferServices(IRepository repository, Mapper mapper)
+        private readonly IAccount _accountService;
+        public TransferServices(IRepository repository, Mapper mapper, IAccount account)
         {
+            _accountService = account;
             _repository = repository;
             _mapper = mapper;
         }
 
-        public ICollection<TransferModelRequest> GetAccountTransfers(string accountNumber)
-        {
-         var baseTransfers = _repository.GetUserTransfers(accountNumber);
-
-        var transfers = new List<TransferModelRequest>();
-
-            foreach (var transfer in baseTransfers)
-            {
-                var model = _mapper.Map<TransferModelRequest>(transfer);
-                transfers.Add(model);
-
-            }
-            return transfers;
-
-        }
+        
 
         public void SendTransfer(TransferModelRequest request)
         {
@@ -41,13 +29,17 @@ namespace BankApp.Server.Services
 
             var recipient = _repository.GetAccountByNumber(recipientNumber);
             var sender = _repository.GetAccountByNumber(senderNumber);
-
-           
-
+            if (sender.Balance < amount) {
+                throw new Exception("No funds");
+            }
+            if (_accountService.GetAccountByAccountNumber(recipientNumber) == null) {
+                throw new Exception("Recipient not found");
+            }
+            
             var transfer = new BaseTransfer(amount,date,recipient,sender,title);
             _repository.IncreaceBalance(amount, recipientNumber);
             _repository.DecreaseBalance(amount, senderNumber);
-            _repository.SaveTransfer(transfer);
+            _repository.SaveTransfer(transfer );
         }
 
       

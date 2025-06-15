@@ -9,7 +9,7 @@ public class MappingProfile : Profile
         CreateMap<BaseAccount, AccountDetailsDTO>()
             .ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => src.Iban))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
-            .ForMember(dest => dest.Transfers, opt => opt.Ignore());
+          ;
 
         CreateMap<BaseTransfer, TransferModelRequest>()
           .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))

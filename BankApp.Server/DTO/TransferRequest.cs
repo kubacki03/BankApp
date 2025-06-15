@@ -1,10 +1,10 @@
 ﻿namespace BankApp.Server.DTO
 {
-    public class TransferDTO
+    public class TransferRequest
     {
         public decimal Amount { get; set; }
-        public string Date { get; set; }
-        public string PayeeName { get; set; }
+        public string RecipientAccountNumber { get; set; }
+
         public string Title { get; set; }
     }
 }

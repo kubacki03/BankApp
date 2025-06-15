@@ -19,20 +19,14 @@ namespace BankApp.Server.Services
             this.mapper = mapper;
         }
 
-        public AccountDetailsDTO GetAccountDetails()
+        public AccountDetailsDTO GetAccountDetails(string email)
         {
-            var user = httpContextAccessor.HttpContext?.User;
 
-            if (user == null || !user.Identity.IsAuthenticated)
-            {
-                return null; 
-            }
 
-            string login = user.FindFirst(ClaimTypes.Name)?.Value;
+            var account = repositoryService.GetAccountByEmail(email);
+           return new AccountDetailsDTO { AccountNumber=account.Iban , Balance=account.Balance };
+
            
-             
-
-            return mapper.Map<AccountDetailsDTO>(repositoryService.GetAccountByLogin(login));
         }
 
 
@@ -40,9 +34,24 @@ namespace BankApp.Server.Services
         return repositoryService.DoesUserExists(pesel);
         }
 
-        public List<TransferDTO> GetLastTransferList(string iban)
+        public List<TransferDTO> GetLastTransferList(string login)
         {
-            return repositoryService.GetLastAccountTransfers(iban);
+            return repositoryService.GetLastAccountTransfers(login);
+        }
+
+        public User GetUserByPesel(string pesel)
+        {
+            return repositoryService.GetUserByPesel(pesel);
+        }
+
+        public BaseAccount GetAccountByLogin(string login)
+        {
+            return repositoryService.GetAccountByEmail(login);
+        }
+
+        public BaseAccount GetAccountByAccountNumber(string number)
+        {
+            return repositoryService.GetAccountByNumber(number);
         }
     }
 }

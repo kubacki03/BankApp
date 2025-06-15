@@ -24,7 +24,7 @@ interface CompanyUserForm extends PrivateUserForm {
 }
 
 const privateSchema = yup.object({
-    email: yup.string().email("Niepoprawny email").required("Email jest wymagany"),
+    email: yup.string().email("Niepoprawny Email").required("Email jest wymagany"),
     password: yup.string().min(6, "Minimum 6 znaków").required("Hasło jest wymagane"),
     password2: yup
         .string()
@@ -60,7 +60,7 @@ function RegisterComponent() {
             const response = await axios.post('https://localhost:7263/register', data);
 
             if (response.status === 200) {
-                // Rejestracja zakończona sukcesem
+                
                 console.log("Rejestracja udana:", response.data);
                 navigate("/showLogin"); 
             } 
@@ -90,6 +90,7 @@ function RegisterComponent() {
             <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
 
                 <InputField label="Email" type="email" name="email" register={register} error={errors.email?.message} />
+
                 <InputField label="Hasło" type="password" name="password" register={register} error={errors.password?.message} />
                 <InputField label="Powtórz Hasło" type="password" name="password2" register={register} error={errors.password2?.message} />
                 <InputField label="Imię" name="name" register={register} error={errors.name?.message} />

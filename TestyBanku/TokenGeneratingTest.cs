@@ -53,8 +53,8 @@ namespace TestyBanku
 
             var request = new LoginModelRequest
             {
-                Login = login,
-                Password = password
+                email = login,
+                password = password
             };
 
             // Act
@@ -86,8 +86,8 @@ namespace TestyBanku
 
             var request = new LoginModelRequest
             {
-                Login = badLogin,
-                Password = password
+                email = badLogin,
+                password = password
             };
 
             // Act

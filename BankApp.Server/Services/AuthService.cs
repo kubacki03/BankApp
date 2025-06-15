@@ -17,11 +17,12 @@ namespace BankApp.Server.Services
         private readonly IRepository repositoryService;
         private readonly IConfiguration _config;
         private readonly Mapper mapper;
+
         public AuthService(IRepository repository, IConfiguration config, Mapper mapper)
         {
-            this.repositoryService = repository;
-            this._config = config;
-            this.mapper = mapper;
+            repositoryService = repository;
+            _config = config;
+            mapper = mapper;
         }
         public bool DoesUserExist(RegisterModelRequest modelRequest)
         {
@@ -36,22 +37,23 @@ namespace BankApp.Server.Services
         public  string Login(LoginModelRequest modelRequest)
         {
 
-           //getting account from database
-           var account= repositoryService.GetAccountByLogin(modelRequest.Login);
+    
+           var account= repositoryService.GetAccountByEmail(modelRequest.email);
             if (account == null)
             {
                 return null;
             }
             var passwordHasher = new PasswordHasher<BaseAccount>();
 
-            var result = passwordHasher.VerifyHashedPassword(account, account.Password, modelRequest.Password);
+            var result = passwordHasher.VerifyHashedPassword(account, account.Password, modelRequest.password);
 
             
             if (result == PasswordVerificationResult.Success)
             {
                 var claims = new[]
-                {
-                    new Claim(ClaimTypes.Name, modelRequest.Login),
+                  {
+                    new Claim(ClaimTypes.Name, account.Email),
+                  
                     new Claim(ClaimTypes.Role, "Admin")
                 };
 
@@ -62,7 +64,7 @@ namespace BankApp.Server.Services
                     issuer: _config["Jwt:Issuer"],
                     audience: _config["Jwt:Issuer"],
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(5),
+                    expires: DateTime.Now.AddMinutes(30),
                     signingCredentials: creds);
 
 

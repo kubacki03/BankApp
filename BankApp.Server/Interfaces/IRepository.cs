@@ -5,9 +5,11 @@ namespace BankApp.Server.Interfaces
 {
     public interface IRepository
     {
-        BaseAccount GetAccountByLogin(string username);
+        BaseAccount GetAccountByEmail(string username);
 
         BaseAccount GetAccountByNumber(string number);
+
+        User GetUserByPesel(string pesel);
 
         bool DoesUserExists(string pesel);
         bool DoesCompanyExistx(string nip);
