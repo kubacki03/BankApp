@@ -105,7 +105,7 @@ namespace BankApp.Server.Services
      .FirstOrDefault(p => p.Email == email);
 
             return account?.Transfers
-                .Select(x => new TransferDTO { Amount = x.Amount, Date = x.Date.ToShortDateString(), PayeeName = x.Payee.User.Name, Title = x.Title })
+                .Select(x => new TransferDTO { Amount = x.Amount, Date = x.Date.ToShortDateString(), PayeeName = x.Payee.User.Name, Title = x.Title, Id=x.Id })
                 .Take(5)
                 .ToList() ?? new List<TransferDTO>();
 
@@ -114,6 +114,26 @@ namespace BankApp.Server.Services
         public User GetUserByPesel(string pesel)
         {
             return _context.Users.FirstOrDefault(p => p.Pesel == pesel);
+        }
+
+        public List<BaseAccount> GetAccountsByUserId(int userId)
+        {
+           return _context.Accounts.Where(a=> a.UserId== userId).ToList();
+        }
+
+        public int GetUserIdByAccount(int accountId)
+        {
+            return _context.Accounts.FirstOrDefault(a => a.Id == accountId)?.UserId ?? 0;
+        }
+
+        public int GetUserByAccountEmail(string username)
+        {
+            return _context.Accounts.Where(a=>a.Email == username).Select(a=>a.UserId).FirstOrDefault();
+        }
+
+        public BaseTransfer GetTransferById(int id)
+        {
+            return _context.Transfers.Include(a=>a.Payee).ThenInclude(a=>a.User).Include(a=>a.Sender).ThenInclude(a => a.User).FirstOrDefault(a => a.Id == id);
         }
     }
 }

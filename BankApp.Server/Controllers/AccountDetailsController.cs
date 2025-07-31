@@ -43,5 +43,17 @@ namespace BankApp.Server.Controllers
 
             return Ok(transfers);
         }
+
+
+
+        [HttpGet("UserAccounts")]
+        [Authorize]
+        public IActionResult GetUserAccounts()
+        {
+            var user = User.Identity?.Name;
+            var userId = _accountDetailsService.GetUserId(user);
+            var list = _accountDetailsService.GetUserAccountList(userId);
+            return Ok(list);
+        }
     }
 }

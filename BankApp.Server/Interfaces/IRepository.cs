@@ -10,7 +10,7 @@ namespace BankApp.Server.Interfaces
         BaseAccount GetAccountByNumber(string number);
 
         User GetUserByPesel(string pesel);
-
+        int GetUserIdByAccount(int userId);
         bool DoesUserExists(string pesel);
         bool DoesCompanyExistx(string nip);
         void IncreaceBalance(decimal amount, string accountNumber);
@@ -26,5 +26,11 @@ namespace BankApp.Server.Interfaces
         void CreateNewPersonalAccount(BaseAccount account);
 
         void CreateNewCompanyAccount(CompanyAccount companyAccount);
+
+        List<BaseAccount> GetAccountsByUserId(int userId);
+
+        int GetUserByAccountEmail(string username);
+
+        BaseTransfer GetTransferById(int id);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BankApp.Server.DTO;
+using BankApp.Server.Models;
 
 namespace BankApp.Server.Interfaces
 {
@@ -7,6 +8,7 @@ namespace BankApp.Server.Interfaces
 
         public void SendTransfer(TransferModelRequest request);
 
+        byte[] GenerateConfirmation(int transfer);
         
     }
 }

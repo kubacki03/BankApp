@@ -4,6 +4,7 @@ using BankApp.Server.Models;
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
 namespace BankApp.Server.Controllers
@@ -26,6 +27,8 @@ namespace BankApp.Server.Controllers
         {
             var email = User.Identity?.Name;
             var senderAccount = service.GetAccountByLogin(email);
+            
+         
 
             TransferModelRequest transferModelRequest = new TransferModelRequest { Amount = request.Amount, RecipientAccountNumber = request.RecipientAccountNumber, Date = DateTime.Now, Title = request.Title, SenderAccountNumber = senderAccount.Iban};
             try
@@ -34,11 +37,24 @@ namespace BankApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                return Conflict(ex);
+                return Conflict(ex.Message);
             }
             
 
             return Ok();
         }
+     
+        [HttpGet("confirmation/{transferId}")]
+        public IActionResult GetTransferConfirmation(int transferId)
+        {
+           
+
+           
+
+            var pdfBytes = transferService.GenerateConfirmation(transferId);
+
+            return File(pdfBytes, "application/pdf", $"Potwierdzenie_{transferId}.pdf");
+        }
+
     }
 }

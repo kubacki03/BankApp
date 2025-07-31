@@ -6,6 +6,8 @@ import HomeComponent from './HomeComponent';
 import RegisterComponent from './RegisterComponent';
 import SuccessRegisterComponent from './SuccessRegisterComponent';
 import DashboardComponent from './DashboardComponent';
+import BankBranchComponent from './BankBranchComponent';
+import ApplicationAdComponent from './ApplicationAdComponent';
 
 interface JwtPayload {
     exp: number;
@@ -44,6 +46,8 @@ const App = () => {
                 <Route path="/" element={<HomeComponent />} />
                 <Route path="/register" element={<RegisterComponent />} />
                 <Route path="/showLogin" element={<SuccessRegisterComponent />} />
+                <Route path="/bankBranch" element={<BankBranchComponent />} />
+                <Route path="/mobileApp" element={<ApplicationAdComponent />} />
                 <Route path="/dashboard" element={<DashboardComponent/> } />
 
             </Routes>

@@ -10,6 +10,7 @@ namespace BankApp.Server.Interfaces
     public interface IAccount
     {
 
+        int GetUserId(string accountId);
           AccountDetailsDTO GetAccountDetails(string email);
         public bool DoesUserExistByPesel(string pesel);
 
@@ -19,5 +20,7 @@ namespace BankApp.Server.Interfaces
         BaseAccount GetAccountByLogin(string login);
 
         BaseAccount GetAccountByAccountNumber(string number);
+
+        public List<AccountDetailsDTO> GetUserAccountList(int userId);
     }
 }

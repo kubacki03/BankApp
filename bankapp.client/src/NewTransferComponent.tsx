@@ -13,7 +13,7 @@ type TransferFormInputs = {
 };
 
 const validationSchema = Yup.object({
-    Amount: Yup.number().required("Kwota jest wymagana"),
+    Amount: Yup.number().min(0.1,"Nie poprawna kwtoa").required("Kwota jest wymagana"),
     RecipientAccountNumber: Yup.string()
         .min(24, "IBAN musi mieæ co najmniej 24 znaki")
         .required("IBAN jest wymagany"),
@@ -22,7 +22,7 @@ const validationSchema = Yup.object({
 
 function NewTransferComponent() {
     const [serverError, setServerError] = useState<string | undefined>(undefined);
-    const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
+    const [isSubmitting, setIsSubmitting] = useState(false); 
     const navigate = useNavigate();
     const {
         register,
@@ -45,11 +45,13 @@ function NewTransferComponent() {
                     }
                 }
             );
+
             alert("Przelew wykonany");
             navigate("/dashboard");
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                setServerError(error.response?.data?.message || "Wyst¹pi³ b³¹d");
+                console.log(error)
+                setServerError(error.response?.data || "Wyst¹pi³ b³¹d");
             } else {
                 setServerError("Nie uda³o siê po³¹czyæ z serwerem");
             }

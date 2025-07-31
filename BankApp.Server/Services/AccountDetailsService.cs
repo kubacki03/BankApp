@@ -53,5 +53,18 @@ namespace BankApp.Server.Services
         {
             return repositoryService.GetAccountByNumber(number);
         }
+
+        public List<AccountDetailsDTO> GetUserAccountList(int userId)
+        {
+            var list =  repositoryService.GetAccountsByUserId(userId);
+            List<AccountDetailsDTO> listDTO = new List<AccountDetailsDTO>();
+            list.ForEach(a => listDTO.Add(new AccountDetailsDTO { AccountNumber = a.Iban, Balance = a.Balance , Name=a.Name}));
+            return listDTO;
+        }
+
+        public int GetUserId(string login)
+        {
+            return repositoryService.GetUserByAccountEmail(login);
+        }
     }
 }

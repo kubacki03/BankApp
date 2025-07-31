@@ -40,11 +40,13 @@ function AccountBalanceComponent({ onHistoryClick }: AccountBalanceProps) {
     }, []);
 
     if (errorOccured) {
+        alert("Czas sesji minał")
         return <Navigate to="/" />;
+        
     }
 
     return (
-        <div className="gap-0.5 grid w-[30%] grid-cols-2 grid-rows-2 rounded-md border px-[1%] pb-[1%] shadow-2xl">
+        <div className=" grid max-h-45 grid-cols-2 grid-rows-2 rounded-md shadow-2xl">
             <div className="col-start-1 row-start-1">
                 <p>BPL Bank Polski</p>
                 <h1 className="block text-xl">BPL KONTO PRYWATNE</h1>

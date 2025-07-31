@@ -8,5 +8,7 @@ namespace BankApp.Server.Interfaces
 
         string GenerateTempPassword(string username);
 
+       
+
     }
 }

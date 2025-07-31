@@ -5,6 +5,8 @@ import LoanAdComponent from "./LoanAdComponent";
 import NavBar from "./NavBar";
 import ServicesComponent from "./ServicesComponent";
 import TransfersHistoryComponent from "./TransfersHistoryComponent";
+import React from "react";
+import UserAccountsComponent from "./UserAccountsComponent";
 
 function DashboardComponent() {
     const [show, setShow] = useState<boolean>(false);
@@ -14,15 +16,18 @@ function DashboardComponent() {
     }
 
     return (
-        <main className="flex flex-col items-center border border-amber-300">
+        <main className="flex flex-col items-center">
             <NavBar />
-            <div className="border-b-gray-700300 mb-3 flex w-9/10 flex-row justify-center border">
-                <LoanAdComponent />
+            <div className=" mt-3 mb-3 flex flex-row justify-center gap-[10%]">
 
-                {/* Przekazujemy funkcję showHistory do AccountBalanceComponent */}
+                <aside className="w-[20%]">
+                    <LoanAdComponent />
+                    <UserAccountsComponent/>
+                </aside>
+
                 <AccountBalanceComponent onHistoryClick={showHistory} />
 
-                <div className="ml-30">
+                <div className="">
                     <ServicesComponent />
                 </div>
             </div>
