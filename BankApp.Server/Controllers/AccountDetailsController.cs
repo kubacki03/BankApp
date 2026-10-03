@@ -1,58 +1,58 @@
-﻿using System.Security.Claims;
 using BankApp.Server.Interfaces;
-using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Server.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
-    public class AccountDetailsController : Controller
+    public class AccountDetailsController : ControllerBase
     {
-
         private readonly IAccount _accountDetailsService;
-        public IConfiguration _config;
-        public AccountDetailsController(IAccount accountDetailsService, IConfiguration configuration)
+
+        public AccountDetailsController(IAccount accountDetailsService)
         {
-            _config = configuration;
             _accountDetailsService = accountDetailsService;
         }
 
         [HttpGet("account")]
-        [Authorize]
-        public IActionResult Get() {
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        {
             var email = User.Identity?.Name;
-            var detailsDTO = _accountDetailsService.GetAccountDetails(email);
-            
+            var detailsDTO = await _accountDetailsService.GetAccountDetailsAsync(email, cancellationToken);
+
+            if (detailsDTO == null)
+            {
+                return NotFound();
+            }
+
             return Ok(detailsDTO);
         }
 
-        [Authorize]
         [HttpGet("lastTransfers")]
-        public IActionResult GetLastTransfers() {
+        public async Task<IActionResult> GetLastTransfers(CancellationToken cancellationToken)
+        {
             var email = User.Identity?.Name;
 
-            var user = _accountDetailsService.GetAccountByLogin(email);
-            if (user == null)
+            var account = await _accountDetailsService.GetAccountByLoginAsync(email, cancellationToken);
+            if (account == null)
             {
                 return Unauthorized();
             }
-            var transfers = _accountDetailsService.GetLastTransferList(user.Email);
+
+            var transfers = await _accountDetailsService.GetLastTransferListAsync(account.Email, cancellationToken);
 
             return Ok(transfers);
         }
 
-
-
         [HttpGet("UserAccounts")]
-        [Authorize]
-        public IActionResult GetUserAccounts()
+        public async Task<IActionResult> GetUserAccounts(CancellationToken cancellationToken)
         {
-            var user = User.Identity?.Name;
-            var userId = _accountDetailsService.GetUserId(user);
-            var list = _accountDetailsService.GetUserAccountList(userId);
+            var email = User.Identity?.Name;
+            var userId = await _accountDetailsService.GetUserIdAsync(email, cancellationToken);
+            var list = await _accountDetailsService.GetUserAccountListAsync(userId, cancellationToken);
+
             return Ok(list);
         }
     }

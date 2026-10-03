@@ -1,11 +1,9 @@
-﻿using BankApp.Server.DTO;
+using BankApp.Server.DTO;
 
 namespace BankApp.Server.Interfaces
 {
     public interface IRegister
     {
-        bool Register(RegisterModelRequest modelRequest);
-        
-        bool DoesUserExist(RegisterModelRequest modelRequest);
+        Task<bool> RegisterAsync(RegisterModelRequest modelRequest, CancellationToken cancellationToken = default);
     }
 }

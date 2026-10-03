@@ -1,26 +1,22 @@
-﻿using AutoMapper;
-using System.Security.Claims;
 using BankApp.Server.DTO;
-using BankApp.Server.Services;
-using Microsoft.AspNetCore.Http;
 using BankApp.Server.Models;
 
 namespace BankApp.Server.Interfaces
 {
     public interface IAccount
     {
+        Task<int> GetUserIdAsync(string email, CancellationToken cancellationToken = default);
 
-        int GetUserId(string accountId);
-          AccountDetailsDTO GetAccountDetails(string email);
-        public bool DoesUserExistByPesel(string pesel);
+        Task<AccountDetailsDTO?> GetAccountDetailsAsync(string email, CancellationToken cancellationToken = default);
 
-        List<TransferDTO> GetLastTransferList(string login);
+        Task<bool> DoesUserExistByPeselAsync(string pesel, CancellationToken cancellationToken = default);
 
-        public User GetUserByPesel(string pesel);
-        BaseAccount GetAccountByLogin(string login);
+        Task<List<TransferDTO>> GetLastTransferListAsync(string email, CancellationToken cancellationToken = default);
 
-        BaseAccount GetAccountByAccountNumber(string number);
+        Task<User?> GetUserByPeselAsync(string pesel, CancellationToken cancellationToken = default);
 
-        public List<AccountDetailsDTO> GetUserAccountList(int userId);
+        Task<BaseAccount?> GetAccountByLoginAsync(string login, CancellationToken cancellationToken = default);
+
+        Task<List<AccountDetailsDTO>> GetUserAccountListAsync(int userId, CancellationToken cancellationToken = default);
     }
 }

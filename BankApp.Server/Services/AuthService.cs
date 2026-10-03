@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Numerics;
 using System.Security.Claims;
 using System.Text;
@@ -13,129 +13,113 @@ namespace BankApp.Server.Services
 {
     public class AuthService : ILogin, IRegister
     {
-
-        private readonly IRepository repositoryService;
+        private readonly IRepository _repository;
         private readonly IConfiguration _config;
-        private readonly Mapper mapper;
+        private readonly IMapper _mapper;
+        private readonly IPasswordHasher<BaseAccount> _passwordHasher;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IRepository repository, IConfiguration config, Mapper mapper)
+        public AuthService(
+            IRepository repository,
+            IConfiguration config,
+            IMapper mapper,
+            IPasswordHasher<BaseAccount> passwordHasher,
+            ILogger<AuthService> logger)
         {
-            repositoryService = repository;
+            _repository = repository;
             _config = config;
-            mapper = mapper;
-        }
-        public bool DoesUserExist(RegisterModelRequest modelRequest)
-        {
-            throw new NotImplementedException();
+            _mapper = mapper;
+            _passwordHasher = passwordHasher;
+            _logger = logger;
         }
 
-        public string GenerateTempPassword(string username)
+        public async Task<string?> LoginAsync(LoginModelRequest modelRequest, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
-        }
+            var account = await _repository.GetAccountByEmailAsync(modelRequest.email, cancellationToken);
 
-        public  string Login(LoginModelRequest modelRequest)
-        {
-
-    
-           var account= repositoryService.GetAccountByEmail(modelRequest.email);
             if (account == null)
             {
+                _logger.LogWarning("Login failed: account not found");
                 return null;
             }
-            var passwordHasher = new PasswordHasher<BaseAccount>();
 
-            var result = passwordHasher.VerifyHashedPassword(account, account.Password, modelRequest.password);
+            var result = _passwordHasher.VerifyHashedPassword(account, account.Password, modelRequest.password);
 
-            
-            if (result == PasswordVerificationResult.Success)
+            if (result == PasswordVerificationResult.Failed)
             {
-                var claims = new[]
-                  {
-                    new Claim(ClaimTypes.Name, account.Email),
-                  
-                    new Claim(ClaimTypes.Role, "Admin")
-                };
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                var token = new JwtSecurityToken(
-                    issuer: _config["Jwt:Issuer"],
-                    audience: _config["Jwt:Issuer"],
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(30),
-                    signingCredentials: creds);
-
-
-                return new JwtSecurityTokenHandler().WriteToken(token);
-                    
-
+                _logger.LogWarning("Login failed: invalid password for account {AccountId}", account.Id);
+                return null;
             }
-            return null;
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, account.Email)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Issuer"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            _logger.LogInformation("Account {AccountId} logged in", account.Id);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public bool Register(RegisterModelRequest modelRequest)
+        public async Task<bool> RegisterAsync(RegisterModelRequest modelRequest, CancellationToken cancellationToken = default)
         {
-            if (repositoryService.DoesUserExists(modelRequest.pesel))
+            if (await _repository.DoesUserExistAsync(modelRequest.pesel, cancellationToken))
             {
                 return false;
             }
 
-            if (modelRequest.nip!=null && repositoryService.DoesCompanyExistx(modelRequest.nip))
+            if (modelRequest.nip != null && await _repository.DoesCompanyExistAsync(modelRequest.nip, cancellationToken))
             {
                 return false;
             }
 
-            var newUser= mapper.Map<User>(modelRequest);
+            var newUser = _mapper.Map<User>(modelRequest);
 
-            BaseAccount account = null;
-            var passwordHasher = new PasswordHasher<BaseAccount>();
-            var hashedPassword = passwordHasher.HashPassword(account, modelRequest.password);
-            repositoryService.CreateNewUser(newUser);
-            
+            var hashedPassword = _passwordHasher.HashPassword(null!, modelRequest.password);
+            await _repository.CreateNewUserAsync(newUser, cancellationToken);
 
             var curentTime = DateTime.Now.Millisecond;
             var hashCode = modelRequest.GetHashCode();
             BigInteger number = BigInteger.Abs(curentTime * hashCode);
 
-            
             string numberStr = number.ToString();
 
-            
             if (numberStr.Length < 26)
+            {
                 numberStr = numberStr.PadLeft(26, '0');
+            }
 
-            
             if (numberStr.Length > 26)
+            {
                 numberStr = numberStr.Substring(0, 26);
-
+            }
 
             if (modelRequest.companyName != null)
             {
-                account = new CompanyAccount { Balance = 0, Email = modelRequest.email, IsActive = true, Password = hashedPassword, Iban=numberStr};
-                var login = account.GetHashCode();
-                account.Login = BigInteger.Abs(login).ToString();
+                var companyAccount = new CompanyAccount { Balance = 0, Email = modelRequest.email, IsActive = true, Password = hashedPassword, Iban = numberStr };
+                companyAccount.Login = BigInteger.Abs(companyAccount.GetHashCode()).ToString();
+                companyAccount.UserId = newUser.Id;
+                await _repository.CreateNewCompanyAccountAsync(companyAccount, cancellationToken);
             }
             else
             {
-                account = new BaseAccount { Balance = 0, Email= modelRequest.email,IsActive = true, Password = hashedPassword, Iban=numberStr };
-                var login = account.GetHashCode();
-                account.Login=BigInteger.Abs(login).ToString();
+                var account = new BaseAccount { Balance = 0, Email = modelRequest.email, IsActive = true, Password = hashedPassword, Iban = numberStr };
+                account.Login = BigInteger.Abs(account.GetHashCode()).ToString();
+                account.UserId = newUser.Id;
+                await _repository.CreateNewPersonalAccountAsync(account, cancellationToken);
             }
 
-            account.UserId = newUser.Id;
-            if (account is CompanyAccount)
-            {
-                repositoryService.CreateNewCompanyAccount((CompanyAccount)account);
-            }
-            else if (account is BaseAccount)
-            {
-                repositoryService.CreateNewPersonalAccount(account);
-            }
-
-
-
+            _logger.LogInformation("Registered new user {UserId}", newUser.Id);
 
             return true;
         }

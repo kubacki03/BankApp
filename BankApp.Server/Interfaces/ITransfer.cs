@@ -1,14 +1,11 @@
-﻿using BankApp.Server.DTO;
-using BankApp.Server.Models;
+using BankApp.Server.DTO;
 
 namespace BankApp.Server.Interfaces
 {
     public interface ITransfer
     {
+        Task SendTransferAsync(TransferModelRequest request, CancellationToken cancellationToken = default);
 
-        public void SendTransfer(TransferModelRequest request);
-
-        byte[] GenerateConfirmation(int transfer);
-        
+        Task<byte[]?> GenerateConfirmationAsync(int transferId, string email, CancellationToken cancellationToken = default);
     }
 }

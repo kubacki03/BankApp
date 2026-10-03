@@ -46,7 +46,7 @@ function AccountBalanceComponent({ onHistoryClick }: AccountBalanceProps) {
     }
 
     return (
-        <div className=" grid max-h-45 grid-cols-2 grid-rows-2 rounded-md shadow-2xl">
+        <div className=" grid max-h-45 grid-cols-2 grid-rows-2 rounded-md px-2 shadow-2xl">
             <div className="col-start-1 row-start-1">
                 <p>BPL Bank Polski</p>
                 <h1 className="block text-xl">BPL KONTO PRYWATNE</h1>

@@ -1,70 +1,62 @@
-﻿using AutoMapper;
 using BankApp.Server.DTO;
 using BankApp.Server.Interfaces;
 using BankApp.Server.Models;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace BankApp.Server.Services
 {
     public class AccountDetailsService : IAccount
     {
-        private readonly RepositoryService repositoryService;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly Mapper mapper;
-        public AccountDetailsService(RepositoryService repositoryService, IHttpContextAccessor httpContextAccessor, Mapper mapper)
+        private readonly IRepository _repository;
+
+        public AccountDetailsService(IRepository repository)
         {
-            this.repositoryService = repositoryService;
-            this.httpContextAccessor = httpContextAccessor;
-            this.mapper = mapper;
+            _repository = repository;
         }
 
-        public AccountDetailsDTO GetAccountDetails(string email)
+        public async Task<AccountDetailsDTO?> GetAccountDetailsAsync(string email, CancellationToken cancellationToken = default)
         {
+            var account = await _repository.GetAccountByEmailAsync(email, cancellationToken);
 
+            if (account == null)
+            {
+                return null;
+            }
 
-            var account = repositoryService.GetAccountByEmail(email);
-           return new AccountDetailsDTO { AccountNumber=account.Iban , Balance=account.Balance };
-
-           
+            return new AccountDetailsDTO { AccountNumber = account.Iban, Balance = account.Balance };
         }
 
-
-        public bool DoesUserExistByPesel(string pesel) { 
-        return repositoryService.DoesUserExists(pesel);
+        public Task<bool> DoesUserExistByPeselAsync(string pesel, CancellationToken cancellationToken = default)
+        {
+            return _repository.DoesUserExistAsync(pesel, cancellationToken);
         }
 
-        public List<TransferDTO> GetLastTransferList(string login)
+        public Task<List<TransferDTO>> GetLastTransferListAsync(string email, CancellationToken cancellationToken = default)
         {
-            return repositoryService.GetLastAccountTransfers(login);
+            return _repository.GetLastAccountTransfersAsync(email, cancellationToken);
         }
 
-        public User GetUserByPesel(string pesel)
+        public Task<User?> GetUserByPeselAsync(string pesel, CancellationToken cancellationToken = default)
         {
-            return repositoryService.GetUserByPesel(pesel);
+            return _repository.GetUserByPeselAsync(pesel, cancellationToken);
         }
 
-        public BaseAccount GetAccountByLogin(string login)
+        public Task<BaseAccount?> GetAccountByLoginAsync(string login, CancellationToken cancellationToken = default)
         {
-            return repositoryService.GetAccountByEmail(login);
+            return _repository.GetAccountByEmailAsync(login, cancellationToken);
         }
 
-        public BaseAccount GetAccountByAccountNumber(string number)
+        public async Task<List<AccountDetailsDTO>> GetUserAccountListAsync(int userId, CancellationToken cancellationToken = default)
         {
-            return repositoryService.GetAccountByNumber(number);
+            var accounts = await _repository.GetAccountsByUserIdAsync(userId, cancellationToken);
+
+            return accounts
+                .Select(a => new AccountDetailsDTO { AccountNumber = a.Iban, Balance = a.Balance, Name = a.Name })
+                .ToList();
         }
 
-        public List<AccountDetailsDTO> GetUserAccountList(int userId)
+        public Task<int> GetUserIdAsync(string email, CancellationToken cancellationToken = default)
         {
-            var list =  repositoryService.GetAccountsByUserId(userId);
-            List<AccountDetailsDTO> listDTO = new List<AccountDetailsDTO>();
-            list.ForEach(a => listDTO.Add(new AccountDetailsDTO { AccountNumber = a.Iban, Balance = a.Balance , Name=a.Name}));
-            return listDTO;
-        }
-
-        public int GetUserId(string login)
-        {
-            return repositoryService.GetUserByAccountEmail(login);
+            return _repository.GetUserByAccountEmailAsync(email, cancellationToken);
         }
     }
 }

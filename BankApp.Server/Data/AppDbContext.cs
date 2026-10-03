@@ -15,8 +15,7 @@ public class AppDbContext : DbContext
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        // Konfiguracja dziedziczenia - Table Per Type (TPT)
+    { 
         modelBuilder.Entity<BaseAccount>().ToTable("Accounts");
         modelBuilder.Entity<CompanyAccount>().ToTable("CompanyAccounts");
 

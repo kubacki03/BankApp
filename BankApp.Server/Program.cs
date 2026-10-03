@@ -40,24 +40,34 @@ builder.Services.AddAuthentication(options =>
     {
         OnAuthenticationFailed = context =>
         {
-            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("JwtBearer");
+            logger.LogWarning("Authentication failed: {Message}", context.Exception.Message);
             return Task.CompletedTask;
         }
     }; 
 });
-IdentityModelEventSource.ShowPII = true;
-IdentityModelEventSource.LogCompleteSecurityArtifact = true;
+if (builder.Environment.IsDevelopment())
+{
+    IdentityModelEventSource.ShowPII = true;
+    IdentityModelEventSource.LogCompleteSecurityArtifact = true;
+}
 builder.Services.AddAuthorization();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddControllers();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<Mapper>();
+builder.Services.AddSingleton<IPasswordHasher<BaseAccount>, PasswordHasher<BaseAccount>>();
+builder.Services.AddScoped<ILogin, AuthService>();
+builder.Services.AddScoped<IRegister, AuthService>();
 builder.Services.AddScoped<IRepository, RepositoryService>();
 builder.Services.AddScoped<IAccount, AccountDetailsService>();
-builder.Services.AddScoped<RepositoryService>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ITransfer,TransferServices>();
+builder.Services.AddScoped<ITemporaryCard, TemporaryDebitCardService>();
+builder.Services.AddScoped<ITransfer, TransferServices>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -75,6 +85,7 @@ app.UseCors("AllowAll");
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
+app.UseSession();
 
 //app.UseHttpsRedirection();
 app.UseAuthentication();

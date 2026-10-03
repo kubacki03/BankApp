@@ -3,7 +3,7 @@
         <nav >
             <ul className="gap-6.5 flex flex-row">
                 <li>
-                    <a>Start</a>
+                    <a href="/dashboard">Start</a>
                 </li>
                 <li>
                     <button>Płatnośći</button>

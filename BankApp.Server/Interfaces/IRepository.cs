@@ -1,36 +1,36 @@
-﻿using BankApp.Server.DTO;
+using BankApp.Server.DTO;
 using BankApp.Server.Models;
 
 namespace BankApp.Server.Interfaces
 {
     public interface IRepository
     {
-        BaseAccount GetAccountByEmail(string username);
+        Task<BaseAccount?> GetAccountByEmailAsync(string email, CancellationToken cancellationToken = default);
 
-        BaseAccount GetAccountByNumber(string number);
+        Task<BaseAccount?> FindAccountByNumberAsync(string number, CancellationToken cancellationToken = default);
 
-        User GetUserByPesel(string pesel);
-        int GetUserIdByAccount(int userId);
-        bool DoesUserExists(string pesel);
-        bool DoesCompanyExistx(string nip);
-        void IncreaceBalance(decimal amount, string accountNumber);
+        Task<User?> GetUserByPeselAsync(string pesel, CancellationToken cancellationToken = default);
 
-        void DecreaseBalance(decimal amount, string accountNumber);
+        Task<int> GetUserIdByAccountAsync(int accountId, CancellationToken cancellationToken = default);
 
-        void SaveTransfer(BaseTransfer transfer);
+        Task<bool> DoesUserExistAsync(string pesel, CancellationToken cancellationToken = default);
 
-        List<TransferDTO> GetLastAccountTransfers(string accountNumber);
+        Task<bool> DoesCompanyExistAsync(string nip, CancellationToken cancellationToken = default);
 
-        void CreateNewUser(User user);
+        Task<bool> TryExecuteTransferAsync(BaseTransfer transfer, CancellationToken cancellationToken = default);
 
-        void CreateNewPersonalAccount(BaseAccount account);
+        Task<List<TransferDTO>> GetLastAccountTransfersAsync(string email, CancellationToken cancellationToken = default);
 
-        void CreateNewCompanyAccount(CompanyAccount companyAccount);
+        Task CreateNewUserAsync(User user, CancellationToken cancellationToken = default);
 
-        List<BaseAccount> GetAccountsByUserId(int userId);
+        Task CreateNewPersonalAccountAsync(BaseAccount account, CancellationToken cancellationToken = default);
 
-        int GetUserByAccountEmail(string username);
+        Task CreateNewCompanyAccountAsync(CompanyAccount companyAccount, CancellationToken cancellationToken = default);
 
-        BaseTransfer GetTransferById(int id);
+        Task<List<BaseAccount>> GetAccountsByUserIdAsync(int userId, CancellationToken cancellationToken = default);
+
+        Task<int> GetUserByAccountEmailAsync(string email, CancellationToken cancellationToken = default);
+
+        Task<BaseTransfer?> GetTransferByIdAsync(int id, CancellationToken cancellationToken = default);
     }
 }

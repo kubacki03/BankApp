@@ -8,6 +8,8 @@ import SuccessRegisterComponent from './SuccessRegisterComponent';
 import DashboardComponent from './DashboardComponent';
 import BankBranchComponent from './BankBranchComponent';
 import ApplicationAdComponent from './ApplicationAdComponent';
+import ExchangeRatesComponent from './ExchangeRatesComponent';
+import DebitCardVisibilityComponent from './DebitCardVisualizerComponent';
 
 interface JwtPayload {
     exp: number;
@@ -48,11 +50,12 @@ const App = () => {
                 <Route path="/showLogin" element={<SuccessRegisterComponent />} />
                 <Route path="/bankBranch" element={<BankBranchComponent />} />
                 <Route path="/mobileApp" element={<ApplicationAdComponent />} />
-                <Route path="/dashboard" element={<DashboardComponent/> } />
-
+                <Route path="/dashboard" element={<DashboardComponent />} />
+                <Route path="/exchange" element={<ExchangeRatesComponent />} />
+                <Route path="/card" element={<DebitCardVisibilityComponent />} />
             </Routes>
         </Router>
-    );
+    ); 
 };
 
 export default App;

@@ -1,31 +1,36 @@
-﻿using System.Globalization;
-using AutoMapper;
+using System.Globalization;
 using BankApp.Server.DTO;
 using BankApp.Server.Interfaces;
 using BankApp.Server.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 
-
-
 namespace BankApp.Server.Services
 {
     public class TransferServices : ITransfer
     {
+        private const int MaxTitleLength = 140;
+
         private readonly IRepository _repository;
-        private readonly Mapper _mapper;
-        private readonly IAccount _accountService;
-        public TransferServices(IRepository repository, Mapper mapper, IAccount account)
+        private readonly ILogger<TransferServices> _logger;
+
+        public TransferServices(IRepository repository, ILogger<TransferServices> logger)
         {
-            _accountService = account;
             _repository = repository;
-            _mapper = mapper;
+            _logger = logger;
         }
 
-        public byte[] GenerateConfirmation(int transferId)
+        public async Task<byte[]?> GenerateConfirmationAsync(int transferId, string email, CancellationToken cancellationToken = default)
         {
-            var transfer = _repository.GetTransferById(transferId);
-          
+            var transfer = await _repository.GetTransferByIdAsync(transferId, cancellationToken);
+            var userId = await _repository.GetUserByAccountEmailAsync(email, cancellationToken);
+
+            if (transfer == null || userId == 0 || (transfer.Sender.UserId != userId && transfer.Payee.UserId != userId))
+            {
+                _logger.LogWarning("Confirmation for transfer {TransferId} not available for user {UserId}", transferId, userId);
+                return null;
+            }
+
             var culture = new CultureInfo("pl-PL");
 
             var document = Document.Create(container =>
@@ -63,38 +68,64 @@ namespace BankApp.Server.Services
                 });
             });
 
-            
-            return document.GeneratePdf();
+            return await Task.Run(() => document.GeneratePdf(), cancellationToken);
         }
-        
 
-        public void SendTransfer(TransferModelRequest request)
+        public async Task SendTransferAsync(TransferModelRequest request, CancellationToken cancellationToken = default)
         {
             var amount = request.GetAmount();
             var senderNumber = request.GetSenderAccountNumber();
             var recipientNumber = request.GetRecipientAccountNumber();
+            var title = request.GetTitle()?.Trim();
+
+            if (amount <= 0 || decimal.Round(amount, 2) != amount)
+            {
+                throw new TransferException("Nieprawidłowa kwota przelewu");
+            }
+
+            if (string.IsNullOrWhiteSpace(recipientNumber))
+            {
+                throw new TransferException("Brak numeru konta odbiorcy");
+            }
+
+            if (string.IsNullOrWhiteSpace(title) || title.Length > MaxTitleLength)
+            {
+                throw new TransferException("Nieprawidłowy tytuł przelewu");
+            }
+
             if (senderNumber == recipientNumber)
             {
-                throw new Exception("Numery kont są identyczne");
+                throw new TransferException("Numery kont są identyczne");
             }
-            var date = request.GetDate();
-            var title = request.GetTitle();
 
-            var recipient = _repository.GetAccountByNumber(recipientNumber);
-            var sender = _repository.GetAccountByNumber(senderNumber);
-            if (sender.Balance < amount) {
-                throw new Exception("No funds");
+            var sender = await _repository.FindAccountByNumberAsync(senderNumber, cancellationToken);
+            if (sender == null || !sender.IsActive)
+            {
+                throw new TransferException("Konto nadawcy jest niedostępne");
             }
-            if (_accountService.GetAccountByAccountNumber(recipientNumber) == null) {
-                throw new Exception("Recipient not found");
+
+            var recipient = await _repository.FindAccountByNumberAsync(recipientNumber, cancellationToken);
+            if (recipient == null || !recipient.IsActive)
+            {
+                throw new TransferException("Nie znaleziono konta odbiorcy");
             }
-            
-            var transfer = new BaseTransfer(amount,date,recipient,sender,title);
-            _repository.IncreaceBalance(amount, recipientNumber);
-            _repository.DecreaseBalance(amount, senderNumber);
-            _repository.SaveTransfer(transfer );
+
+            var transfer = new BaseTransfer
+            {
+                Amount = amount,
+                Date = request.GetDate(),
+                PayeeId = recipient.Id,
+                SenderId = sender.Id,
+                Title = title
+            };
+
+            if (!await _repository.TryExecuteTransferAsync(transfer, cancellationToken))
+            {
+                _logger.LogWarning("Transfer from account {SenderId} to {PayeeId} rejected: insufficient funds", sender.Id, recipient.Id);
+                throw new TransferException("Brak wystarczających środków na koncie");
+            }
+
+            _logger.LogInformation("Transfer {TransferId} from account {SenderId} to {PayeeId} completed", transfer.Id, sender.Id, recipient.Id);
         }
-
-      
     }
 }

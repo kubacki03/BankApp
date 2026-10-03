@@ -1,64 +1,53 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using BankApp.Server.DTO;
-using BankApp.Server.Models;
-using BankApp.Server.Services;
+using BankApp.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BankApp.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
-        private readonly IConfiguration _config;
-        private readonly AuthService authService;
-        public AuthController(AuthService authService, IConfiguration configuration)
-        {
-            _config = configuration;
-            this.authService = authService;
-        }
+        private readonly ILogin _loginService;
+        private readonly IRegister _registerService;
 
+        public AuthController(ILogin loginService, IRegister registerService)
+        {
+            _loginService = loginService;
+            _registerService = registerService;
+        }
 
         [Authorize]
         [HttpGet("private")]
-        public IActionResult get()
+        public IActionResult Private()
         {
             return Ok("git");
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginModelRequest request)
+        public async Task<IActionResult> Login(LoginModelRequest request, CancellationToken cancellationToken)
         {
-
-
-            var token = authService.Login(request);
+            var token = await _loginService.LoginAsync(request, cancellationToken);
 
             if (token == null)
             {
                 return Unauthorized();
             }
-             
 
+            return Ok(token);
+        }
 
-                return Ok(token);
-            }
-
-
-       
         [HttpPost("/register")]
-        public IActionResult Register(RegisterModelRequest request)
+        public async Task<IActionResult> Register(RegisterModelRequest request, CancellationToken cancellationToken)
         {
-            var isDone = authService.Register(request);
+            var isDone = await _registerService.RegisterAsync(request, cancellationToken);
 
-            if (isDone == false) {
+            if (!isDone)
+            {
                 return Conflict();
             }
-            
+
             return Ok();
         }
     }

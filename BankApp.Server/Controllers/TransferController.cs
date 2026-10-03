@@ -1,60 +1,68 @@
-﻿using BankApp.Server.DTO;
+using BankApp.Server.DTO;
 using BankApp.Server.Interfaces;
-using BankApp.Server.Models;
 using BankApp.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace BankApp.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TransferController : Controller
+    [Authorize]
+    public class TransferController : ControllerBase
     {
-        Interfaces.IAccount service;
-        ITransfer transferService;
-        public TransferController(Interfaces.IAccount accountDetailsService, ITransfer transfer)
+        private readonly IAccount _accountService;
+        private readonly ITransfer _transferService;
+
+        public TransferController(IAccount accountService, ITransfer transferService)
         {
-            this.service = accountDetailsService;
-            this.transferService = transfer;
+            _accountService = accountService;
+            _transferService = transferService;
         }
 
         [HttpPost("MakeTransfer")]
-        [Authorize]
-        public IActionResult MakeTransfer(TransferRequest request)
+        public async Task<IActionResult> MakeTransfer(TransferRequest request, CancellationToken cancellationToken)
         {
             var email = User.Identity?.Name;
-            var senderAccount = service.GetAccountByLogin(email);
-            
-         
+            var senderAccount = await _accountService.GetAccountByLoginAsync(email, cancellationToken);
 
-            TransferModelRequest transferModelRequest = new TransferModelRequest { Amount = request.Amount, RecipientAccountNumber = request.RecipientAccountNumber, Date = DateTime.Now, Title = request.Title, SenderAccountNumber = senderAccount.Iban};
+            if (senderAccount == null)
+            {
+                return Unauthorized();
+            }
+
+            var transferModelRequest = new TransferModelRequest
+            {
+                Amount = request.Amount,
+                RecipientAccountNumber = request.RecipientAccountNumber,
+                Date = DateTime.Now,
+                Title = request.Title,
+                SenderAccountNumber = senderAccount.Iban
+            };
+
             try
             {
-                transferService.SendTransfer(transferModelRequest);
+                await _transferService.SendTransferAsync(transferModelRequest, cancellationToken);
             }
-            catch (Exception ex)
+            catch (TransferException ex)
             {
                 return Conflict(ex.Message);
             }
-            
 
             return Ok();
         }
-     
+
         [HttpGet("confirmation/{transferId}")]
-        public IActionResult GetTransferConfirmation(int transferId)
+        public async Task<IActionResult> GetTransferConfirmation(int transferId, CancellationToken cancellationToken)
         {
-           
+            var pdfBytes = await _transferService.GenerateConfirmationAsync(transferId, User.Identity?.Name, cancellationToken);
 
-           
-
-            var pdfBytes = transferService.GenerateConfirmation(transferId);
+            if (pdfBytes == null)
+            {
+                return NotFound();
+            }
 
             return File(pdfBytes, "application/pdf", $"Potwierdzenie_{transferId}.pdf");
         }
-
     }
 }
